@@ -24,3 +24,109 @@ map = {
 'a1':34,'a2':46,'a3':58,'a4':70,'a5':82,'a6':94,'a7':106,
 
 'B1':35,'B2':47,'B3':59,'B4':71,'B5':83,'B6':95,'B7':107}
+
+
+def musicReader(input, output, instrument, x=0.27):
+    # input += ".txt"
+    # output += ".txt"
+    file = open(input,"r")
+    writeFile = open(output+".txt","w")
+    # writePreFile = open("musicTextPreFinal3.txt","w")
+    x=0
+
+    musicString1 = file.read()
+
+    #Tens place 1 refers to left hand, 2 means right hand
+    #The units place is for the octave
+    musicNotes = {11:"",12:"",13:"",14:"",15:"",16:"",17:"",
+                  21:"",22:"",23:"",24:"",25:"",26:"",27:"",
+                  31:"",32:"",33:"",34:"",35:"",36:"",37:"",
+                  41:"",42:"",43:"",44:"",45:"",46:"",47:"",
+                  51:"",52:"",53:"",54:"",55:"",56:"",57:"",
+                  61:"",62:"",63:"",64:"",65:"",66:"",67:""}
+
+    flags = {"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0}
+    #Flag to check if the octant is already present in the block
+
+    """
+                RH:5|--c--d--e-----------f--e--|
+                RH:4|-----------------g--------|
+                LH:4|--------------c-----------|
+                LH:3|--------c--g--------------|"""
+
+    # print(flags[5])
+    # 0 --> No note
+    # 1 --> 1 note
+    # 2 --> 2 notes/repeats twice
+
+    for block in musicString1.split("\n\n"):
+        for line in block.split("\n"):
+            if len(line)==32:
+                octant = line[3]
+                pos = 3
+            else:
+                octant = line[0]
+                pos = 0
+            # print(octant)
+            flags[octant] += 1
+
+            musicNotes[int(str(flags[octant])+str(octant))] += line[pos+2:-1]
+
+
+    # If iter1 has 0 flag then fill both 11 and 21
+    # else if iter2 has 1 flag fill just 21
+
+        for octant in flags.keys():
+
+            if flags[octant] == 0:
+                musicNotes[int("1"+str(octant))] += "-"*26
+                musicNotes[int("2"+str(octant))] += "-"*26
+                musicNotes[int("3"+str(octant))] += "-"*26
+                musicNotes[int("4"+str(octant))] += "-"*26
+                musicNotes[int("5"+str(octant))] += "-"*26
+                musicNotes[int("6"+str(octant))] += "-"*26
+
+            if flags[octant] == 1:
+                musicNotes[int("2"+str(octant))] += "-"*26
+                musicNotes[int("3"+str(octant))] += "-"*26
+                musicNotes[int("4"+str(octant))] += "-"*26
+                musicNotes[int("5"+str(octant))] += "-"*26
+                musicNotes[int("6"+str(octant))] += "-"*26
+
+            if flags[octant] == 2:
+                musicNotes[int("3"+str(octant))] += "-"*26
+                musicNotes[int("4"+str(octant))] += "-"*26
+                musicNotes[int("5"+str(octant))] += "-"*26
+                musicNotes[int("6"+str(octant))] += "-"*26
+
+            if flags[octant] == 3:
+                musicNotes[int("4"+str(octant))] += "-"*26
+                musicNotes[int("5"+str(octant))] += "-"*26
+                musicNotes[int("6"+str(octant))] += "-"*26
+
+            if flags[octant] == 4:
+                musicNotes[int("5"+str(octant))] += "-"*26
+                musicNotes[int("6"+str(octant))] += "-"*26
+
+            if flags[octant] == 5:
+                musicNotes[int("6"+str(octant))] += "-"*26
+
+        # print("Flags Values -->",list(flags.values()))
+        flags = {"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0} #Reset the flags to 0
+        # print("Line Done")
+
+    # print(musicNotes,"\n")
+    #{"11":"---c----D-------", "12":"-----c-a-A--a---", ..}
+    strr = ""
+    for key in list(musicNotes.keys())[:]:
+        strr+=str(key)[1]+"|"+musicNotes[key]+"\n"
+        # print(len(s))
+
+    # writePreFile.write("\n".join(str(musicNotes).split("', ")))
+    # writePreFile.write(str(musicNotes))
+    writeFile.write(strr)
+    writeFile.close()
+    writeFile = open(output+".txt","r")
+    strFile = writeFile.read()
+
+    
