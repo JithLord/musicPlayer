@@ -1,6 +1,3 @@
-# The first line badam basssssss
-
-
 from midiutil.MidiFile import MIDIFile
 import os
 
