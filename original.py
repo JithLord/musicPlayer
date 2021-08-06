@@ -129,4 +129,60 @@ def musicReader(input, output, instrument, x=0.27):
     writeFile = open(output+".txt","r")
     strFile = writeFile.read()
 
+
+
+myMIDI = MIDIFile(2)
+    myMIDI.addProgramChange(0, 0, 0, 0)
+    # Flute 75, Sitar 104, Acoustic Guitar 24,25, violin 40, Xylophone 13, Electric Piano 4, Cello 42, Pan Flute 75, Drum 114, Kalimba 108
+    myMIDI.addProgramChange(0, 1, 0, instrument)
+    track = 1
+    time = 0
+    # myMIDI.changeNoteTuning(0, tuning, tuningProgam=0)
+    myMIDI.addTrackName (track,time,output)
+    myMIDI.addTempo (track,time,120)
+    #tempo = 120
+    channel = 0
+    volume = 100
+
+    strFile = strFile.swapcase()
+
+    i = 2
+    notes_time = []
+    max_i = len((strFile.splitlines())[0])-1
+    t = 0
+
+    while i<=max_i :
+        for line in strFile.splitlines() :
+            if (line[i]!='-') :
+                note = line[i]+line[0]
+                pitch = map[note]
+                notes_time.append(pitch)
+            else :
+                note = 'X'  #can be anything
+                pitch = 0
+                notes_time.append(pitch)
+        i=i+1
+        #print (notes_time)
+
+        volume = 100
+        for j in notes_time :
+            if (j==0) :
+                myMIDI.addNote (track,channel,j,t,1,0)
+            else :
+                myMIDI.addNote (track,channel,j,t,1,volume)
+        t = t+x #average estimated delay .... 5 dashes ~ 1 second
+        notes_time = []
+
+
+    binfile = open(output+".mid","wb")
+    myMIDI.writeFile(binfile)
+    myMIDI.writeFile(binfile)
+    binfile.close()
+
+
+    file.close()
+    writeFile.close()
+
+    os.chdir(cwd)
+    os.remove(output+".txt")
     
